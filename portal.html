@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Espace Client – Code Netflix & Abonnement</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --card-bg: #141923;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent: #e50914;
+      --accent-glow: rgba(229, 9, 20, 0.35);
+      --text: #f3f4f6;
+      --text-muted: #8b949e;
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.25);
+      --warning: #f59e0b;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1rem;
+    }
+    .portal-container {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(229, 9, 20, 0.12);
+      border: 1px solid rgba(229, 9, 20, 0.3);
+      color: #ff4d4d;
+      padding: 0.35rem 0.85rem;
+      border-radius: 99px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.75rem;
+    }
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 0.3rem;
+    }
+
+    /* Client selector if no ID in URL */
+    .client-picker-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      background: #1c2333;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    /* Main Code Card */
+    .code-card {
+      background: linear-gradient(145deg, #161c28, #11151f);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.75rem 1.25rem;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .code-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #e50914, #ff6b6b, #e50914);
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 1rem;
+    }
+    .status-active {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+    }
+    .status-waiting {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fbbf24;
+    }
+    .pulse-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .code-display {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      margin: 1.2rem 0;
+    }
+    .code-digit {
+      width: 58px;
+      height: 72px;
+      background: #0d111a;
+      border: 2px solid rgba(229, 9, 20, 0.4);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #ffffff;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.6), 0 4px 15px var(--accent-glow);
+      text-shadow: 0 0 12px rgba(255,255,255,0.3);
+    }
+    .countdown-box {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+    .countdown-timer {
+      color: #34d399;
+      font-weight: 700;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 0.85rem 1.2rem;
+      border-radius: 12px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 18px var(--accent-glow);
+    }
+    .btn-primary:hover {
+      background: #b80710;
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      margin-top: 0.6rem;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    /* Steps guide */
+    .steps-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .steps-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #fff;
+    }
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .step-item:last-child { margin-bottom: 0; }
+    .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(229, 9, 20, 0.2);
+      color: #ff6b6b;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Client Info Card */
+    .client-info-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .client-avatar {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+    .client-details {
+      flex: 1;
+      margin-left: 0.85rem;
+    }
+    .client-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .client-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: auto;
+      padding-top: 1rem;
+    }
+    .live-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #10b981;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="portal-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h2v2h-2v-2zm0-10h2v8h-2V6z"/></svg>
+        Assistance Déconnexion TV
+      </div>
+      <h1 id="portal-title">Code d'accès Netflix</h1>
+      <p id="portal-subtitle">Récupérez instantanément votre code à 4 chiffres</p>
+    </header>
+
+    <!-- Client selector if no client in query params -->
+    <div class="client-picker-card" id="client-picker" style="display: none;">
+      <div class="form-group">
+        <label for="picker-select">Sélectionnez votre nom :</label>
+        <select id="picker-select">
+          <option value="">-- Choisissez votre profil --</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="picker-btn">Afficher mon code</button>
+    </div>
+
+    <!-- Client Info Bar -->
+    <div class="client-info-card" id="client-info-bar">
+      <div class="client-avatar" id="c-avatar">N</div>
+      <div class="client-details">
+        <div class="client-name" id="c-name">Chargement...</div>
+        <div class="client-sub" id="c-sub">Netflix Premium UHD</div>
+      </div>
+      <div id="c-status"><span style="color:#10b981;font-weight:700;font-size:0.8rem">● Actif</span></div>
+    </div>
+
+    <!-- Main Netflix Code Card -->
+    <div class="code-card">
+      <div id="code-status-badge" class="status-badge status-active">
+        <span class="pulse-dot"></span>
+        <span id="code-status-text">Code Netflix Reçu</span>
+      </div>
+
+      <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.4rem">
+        Entrez ce code sur votre téléviseur :
+      </div>
+
+      <!-- 4-digit code display -->
+      <div class="code-display" id="code-digits-container">
+        <div class="code-digit" id="d1">-</div>
+        <div class="code-digit" id="d2">-</div>
+        <div class="code-digit" id="d3">-</div>
+        <div class="code-digit" id="d4">-</div>
+      </div>
+
+      <div class="countdown-box" id="countdown-box">
+        Reçu <span id="received-time">à l'instant</span> • Valable encore <span class="countdown-timer" id="countdown">15:00</span>
+      </div>
+
+      <div style="margin-top: 1.2rem;">
+        <button class="btn btn-primary" id="copy-code-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="copy-btn-text">Copier le code</span>
+        </button>
+
+        <a href="#" target="_blank" class="btn btn-secondary" id="household-btn" style="display:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          Valider le Foyer Netflix en 1 clic
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick instructions -->
+    <div class="steps-card">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Comment débloquer votre écran TV ?
+      </h3>
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div>Sur votre téléviseur Netflix, cliquez sur <strong>"Je suis en voyage"</strong> ou <strong>"Mettre à jour le foyer"</strong>.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div>Sélectionnez <strong>"M'envoyer un e-mail"</strong>.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div>Le code à 4 chiffres apparaît instantanément ci-dessus ! Recopiez-le sur votre TV pour reprendre vos vidéos.</div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div><span class="live-dot"></span> Synchronisation automatique en direct (toutes les 5s)</div>
+      <div style="margin-top:0.3rem">SubManager • Espace autonome sécurisé</div>
+    </footer>
+  </div>
+
+  <script src="js/db.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      let clientId = params.get('c') || params.get('id');
+      let clientPhone = params.get('tel');
+
+      const clients = DB.clients.getAll();
+      let currentClient = null;
+
+      if (clientId) {
+        currentClient = clients.find(c => c.id === clientId);
+      } else if (clientPhone) {
+        const cleanPhone = clientPhone.replace(/\D/g, '');
+        currentClient = clients.find(c => (c.whatsapp || '').replace(/\D/g,'').includes(cleanPhone));
+      }
+
+      const picker = document.getElementById('client-picker');
+      const select = document.getElementById('picker-select');
+
+      // Populate picker if multiple clients
+      if (!currentClient) {
+        const netflixClients = clients.filter(c => c.service === 'Netflix');
+        (netflixClients.length ? netflixClients : clients).forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = `${c.name} (${c.service} - ${c.profile || 'Profil'})`;
+          select.appendChild(opt);
+        });
+        picker.style.display = 'block';
+
+        document.getElementById('picker-btn').addEventListener('click', () => {
+          if (select.value) {
+            window.location.href = `portal.html?c=${select.value}`;
+          }
+        });
+        currentClient = netflixClients[0] || clients[0];
+      }
+
+      if (currentClient) {
+        document.getElementById('c-name').textContent = currentClient.name;
+        document.getElementById('c-sub').textContent = `${currentClient.service} • ${currentClient.profile || 'Profil 1'} • Code PIN: ${currentClient.pinCode || '1234'}`;
+        document.getElementById('c-avatar').textContent = currentClient.name.charAt(0).toUpperCase();
+      }
+
+      function updateCodeDisplay() {
+        // Fetch latest Netflix code from DB or server API
+        const codes = DB.netflixCodes ? DB.netflixCodes.getAll() : [];
+        const latest = codes[0];
+
+        const d1 = document.getElementById('d1');
+        const d2 = document.getElementById('d2');
+        const d3 = document.getElementById('d3');
+        const d4 = document.getElementById('d4');
+        const badge = document.getElementById('code-status-badge');
+        const badgeText = document.getElementById('code-status-text');
+        const countdownEl = document.getElementById('countdown');
+        const householdBtn = document.getElementById('household-btn');
+        const receivedEl = document.getElementById('received-time');
+
+        if (latest && latest.code) {
+          const rawCode = String(latest.code).padStart(4, '0').slice(0, 4);
+          d1.textContent = rawCode[0] || '-';
+          d2.textContent = rawCode[1] || '-';
+          d3.textContent = rawCode[2] || '-';
+          d4.textContent = rawCode[3] || '-';
+
+          const exp = new Date(latest.expiresAt).getTime();
+          const now = Date.now();
+          const diffMs = exp - now;
+
+          if (diffMs > 0) {
+            badge.className = 'status-badge status-active';
+            badgeText.textContent = 'Code Actif & Valide';
+            const mins = Math.floor(diffMs / 60000);
+            const secs = Math.floor((diffMs % 60000) / 1000);
+            countdownEl.textContent = `${mins}m ${secs < 10 ? '0' : ''}${secs}s`;
+          } else {
+            badge.className = 'status-badge status-waiting';
+            badgeText.textContent = 'Code Expiré (Demandez-en un nouveau)';
+            countdownEl.textContent = '00:00';
+          }
+
+          if (latest.householdLink) {
+            householdBtn.href = latest.householdLink;
+            householdBtn.style.display = 'inline-flex';
+          } else {
+            householdBtn.style.display = 'none';
+          }
+
+          if (latest.receivedAt) {
+            const rDate = new Date(latest.receivedAt);
+            receivedEl.textContent = 'à ' + rDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+          }
+        } else {
+          d1.textContent = '-';
+          d2.textContent = '-';
+          d3.textContent = '-';
+          d4.textContent = '-';
+          badge.className = 'status-badge status-waiting';
+          badgeText.textContent = 'En attente de code...';
+          countdownEl.textContent = '—';
+        }
+      }
+
+      // Initial run & auto refresh every 2.5 seconds
+      updateCodeDisplay();
+      setInterval(updateCodeDisplay, 2500);
+
+      // Copy code button
+      document.getElementById('copy-code-btn').addEventListener('click', () => {
+        const codes = DB.netflixCodes ? DB.netflixCodes.getAll() : [];
+        const latest = codes[0];
+        if (latest && latest.code) {
+          navigator.clipboard.writeText(latest.code).then(() => {
+            const btnText = document.getElementById('copy-btn-text');
+            btnText.textContent = '✅ Code Copié !';
+            setTimeout(() => { btnText.textContent = 'Copier le code'; }, 2000);
+          });
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

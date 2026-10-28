@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Subscription Manager – Gérez vos clients et abonnements numériques de manière professionnelle." />
+  <title>Subscription Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ===== LOGIN SCREEN ===== -->
+  <div id="login-screen" class="login-screen hidden">
+    <div class="login-card">
+      <div class="login-logo">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <rect width="48" height="48" rx="12" fill="url(#grad1)"/>
+          <path d="M14 24L20 30L34 16" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="grad1" x1="0" y1="0" x2="48" y2="48">
+              <stop offset="0%" stop-color="#6366f1"/>
+              <stop offset="100%" stop-color="#8b5cf6"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <h1 class="login-title">Subscription Manager</h1>
+      <p class="login-subtitle">Connectez-vous à votre espace administrateur</p>
+      <form id="login-form" class="login-form" novalidate>
+        <div class="form-group">
+          <label for="login-username">Nom d'utilisateur</label>
+          <input type="text" id="login-username" placeholder="admin" autocomplete="username" required />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Mot de passe</label>
+          <div class="password-wrapper">
+            <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required />
+            <button type="button" class="toggle-pw" id="toggle-pw-btn" aria-label="Afficher/masquer le mot de passe">
+              <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div id="login-error" class="login-error hidden">Identifiants incorrects. Veuillez réessayer.</div>
+        <button type="submit" class="btn btn-primary btn-full" id="login-btn">Se connecter</button>
+      </form>
+      <p class="login-hint">Identifiants par défaut : <strong>admin / admin123</strong></p>
+    </div>
+  </div>
+
+  <!-- ===== MAIN APP ===== -->
+  <div id="app" class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+            <rect width="48" height="48" rx="10" fill="url(#grad2)"/>
+            <path d="M14 24L20 30L34 16" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="grad2" x1="0" y1="0" x2="48" y2="48">
+                <stop offset="0%" stop-color="#6366f1"/>
+                <stop offset="100%" stop-color="#8b5cf6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="sidebar-brand">SubManager</span>
+        </div>
+        <button class="sidebar-close" id="sidebar-close-btn" aria-label="Fermer le menu">✕</button>
+      </div>
+      <nav class="sidebar-nav">
+        <!-- ESSENTIEL -->
+        <a href="#" class="nav-item active" data-page="dashboard" id="nav-dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          <span>Tableau de bord</span>
+        </a>
+        <a href="#" class="nav-item" data-page="clients" id="nav-clients">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Clients</span>
+        </a>
+        <a href="#" class="nav-item" data-page="subscriptions" id="nav-subscriptions">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <span>Abonnements</span>
+        </a>
+        <a href="#" class="nav-item" data-page="netflix-codes" id="nav-netflix-codes" style="background: rgba(229, 9, 20, 0.12); border: 1px solid rgba(229, 9, 20, 0.25); color: #ff4d4d;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span>Codes Netflix</span>
+          <span class="nav-badge" id="nfc-badge" style="background:#e50914;color:#fff;display:inline-block">LIVE</span>
+        </a>
+
+        <!-- OPTIONS SECONDAIRES -->
+        <div style="margin: 1.2rem 0 0.4rem 0.75rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); font-weight: 700;">
+          Autres outils
+        </div>
+        <a href="#" class="nav-item" data-page="payments" id="nav-payments">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>Paiements</span>
+        </a>
+        <a href="#" class="nav-item" data-page="alerts" id="nav-alerts">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span>Alertes</span>
+          <span class="nav-badge" id="alerts-badge">0</span>
+        </a>
+        <a href="#" class="nav-item" data-page="history" id="nav-history">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Historique</span>
+        </a>
+        <a href="#" class="nav-item" data-page="reports" id="nav-reports">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Rapports</span>
+        </a>
+        <a href="#" class="nav-item" data-page="settings" id="nav-settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 0 4.93 19.07M4.93 4.93A10 10 0 0 0 19.07 19.07"/></svg>
+          <span>Paramètres</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">A</div>
+          <div>
+            <div class="user-name" id="sidebar-username">Admin</div>
+            <div class="user-role">Administrateur</div>
+          </div>
+        </div>
+        <button class="btn-icon logout-btn" id="logout-btn" title="Déconnexion">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- TOP BAR -->
+      <header class="topbar">
+        <button class="btn-icon menu-btn" id="menu-btn" aria-label="Ouvrir le menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="topbar-title" id="page-title">Tableau de bord</div>
+        <div class="topbar-actions">
+          <div class="search-bar" id="global-search-bar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="global-search" placeholder="Rechercher..." />
+          </div>
+          <div class="topbar-date" id="topbar-date"></div>
+        </div>
+      </header>
+
+      <!-- PAGE CONTAINER -->
+      <main class="page-container">
+
+        <!-- DASHBOARD PAGE -->
+        <section id="page-dashboard" class="page active">
+          <!-- WIDGET CODE NETFLIX EN DIRECT -->
+          <div id="dashboard-netflix-widget" style="margin-bottom: 1.25rem;"></div>
+
+          <div class="stats-grid" id="stats-grid"></div>
+          <div class="dashboard-row">
+            <div class="dashboard-col">
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+                    Alertes actives
+                  </h2>
+                </div>
+                <div class="card-body" id="dashboard-alerts"></div>
+              </div>
+            </div>
+            <div class="dashboard-col">
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Activité récente
+                  </h2>
+                </div>
+                <div class="card-body" id="dashboard-activity"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card mt-4">
+            <div class="card-header">
+              <h2 class="card-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                Abonnements expirant bientôt
+              </h2>
+            </div>
+            <div class="card-body">
+              <div class="table-wrapper">
+                <table class="data-table" id="expiring-table">
+                  <thead>
+                    <tr>
+                      <th>Client</th>
+                      <th>Service</th>
+                      <th>Expiration</th>
+                      <th>Jours restants</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="expiring-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CLIENTS PAGE -->
+        <section id="page-clients" class="page hidden">
+          <div class="page-actions-bar">
+            <div class="filters-row">
+              <div class="search-input-wrap">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="client-search" placeholder="Rechercher client..." />
+              </div>
+              <select id="client-status-filter" class="select-input">
+                <option value="">Tous les statuts</option>
+                <option value="active">Actif</option>
+                <option value="expired">Expiré</option>
+                <option value="expiring">Expirant bientôt</option>
+              </select>
+              <select id="client-service-filter" class="select-input">
+                <option value="">Tous les services</option>
+              </select>
+              <select id="client-sort" class="select-input">
+                <option value="expiration_asc">Expiration ↑</option>
+                <option value="expiration_desc">Expiration ↓</option>
+                <option value="name_asc">Nom A-Z</option>
+                <option value="name_desc">Nom Z-A</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" id="add-client-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Ajouter un client
+            </button>
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table class="data-table" id="clients-table">
+                <thead>
+                  <tr>
+                    <th>Client</th>
+                    <th>Service</th>
+                    <th>Profil</th>
+                    <th>Prix</th>
+                    <th>Expiration</th>
+                    <th>Statut</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="clients-tbody"></tbody>
+              </table>
+            </div>
+            <div class="table-footer" id="clients-footer"></div>
+          </div>
+        </section>
+
+        <!-- SUBSCRIPTIONS PAGE -->
+        <section id="page-subscriptions" class="page hidden">
+          <div class="page-actions-bar">
+            <h2 class="section-subtitle">Comptes & Abonnements achetés</h2>
+            <button class="btn btn-primary" id="add-sub-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Ajouter un abonnement
+            </button>
+          </div>
+          <div class="stats-grid mini" id="sub-stats-grid"></div>
+          <div class="card mt-4">
+            <div class="table-wrapper">
+              <table class="data-table" id="subscriptions-table">
+                <thead>
+                  <tr>
+                    <th>Service</th>
+                    <th>Coût achat</th>
+                    <th>Date achat</th>
+                    <th>Expiration</th>
+                    <th>Accès tot.</th>
+                    <th>Utilisés</th>
+                    <th>Disponibles</th>
+                    <th>Revenus</th>
+                    <th>Bénéfice</th>
+                    <th>Marge</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="subscriptions-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- NETFLIX CODES PAGE (AUTOMATION) -->
+        <section id="page-netflix-codes" class="page hidden">
+          <div class="page-header" style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h1 style="font-size: 1.4rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: #e50914;">⚡</span> Codes Temporaires & Foyers Netflix
+              </h1>
+              <p style="color: var(--text-muted); font-size: 0.88rem;">
+                Automatisation complète des déconnexions TV : vos clients consultent leur code en direct ou le reçoivent par WhatsApp en 1 clic !
+              </p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="btn btn-secondary" onclick="NetflixCodes.openQuickAddModal()">
+                ✍️ Saisie manuelle rapide
+              </button>
+              <button class="btn btn-primary" onclick="NetflixCodes.simulateTestCode()">
+                ⚡ Simuler un code reçu
+              </button>
+            </div>
+          </div>
+
+          <!-- Active Code Live Card Container -->
+          <div id="nfc-active-card-container" style="margin-bottom: 1.75rem;"></div>
+
+          <!-- Netflix Clients & Portals Grid -->
+          <div class="card" style="margin-bottom: 1.75rem;">
+            <div class="card-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+              <h2 class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Portails Clients Netflix & Accès Autonome
+              </h2>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Vos clients voient leur code en direct sur leur téléphone</span>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Client / Profil</th>
+                    <th>WhatsApp</th>
+                    <th>Statut</th>
+                    <th>Portail Autonome</th>
+                    <th>Actions Rapides</th>
+                  </tr>
+                </thead>
+                <tbody id="nfc-clients-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Robot IMAP Configuration Card -->
+          <div class="card" style="margin-bottom: 1.75rem;">
+            <div class="card-header">
+              <h2 class="card-title">
+                🤖 Robot de relève d'emails automatique (Gmail / IMAP)
+              </h2>
+            </div>
+            <div class="card-body">
+              <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1rem;">
+                Le robot surveille les emails de <strong>info@account.netflix.com</strong>. Dès qu'un code à 4 chiffres arrive, il est capturé instantanément sans aucune intervention de votre part.
+              </p>
+              <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.65rem 1rem; border-radius: 10px; display: flex; align-items: center; gap: 0.5rem; color: #10b981; font-weight: 600; font-size: 0.85rem;">
+                  <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+                  Serveur & API prêts (port 3000)
+                </div>
+                <a href="portal.html" target="_blank" class="btn btn-secondary" style="font-size: 0.85rem;">
+                  🌐 Ouvrir le Portail Client en test
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- History of received codes -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Historique des codes Netflix reçus</h2>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Code PIN</th>
+                    <th>Email du compte</th>
+                    <th>Date & Heure</th>
+                    <th>Source</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="nfc-history-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAYMENTS PAGE -->
+        <section id="page-payments" class="page hidden">
+          <div class="page-actions-bar">
+            <div class="filters-row">
+              <div class="search-input-wrap">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="payment-search" placeholder="Rechercher paiement..." />
+              </div>
+              <select id="payment-method-filter" class="select-input">
+                <option value="">Toutes méthodes</option>
+                <option value="wave">Wave</option>
+                <option value="orange_money">Orange Money</option>
+                <option value="especes">Espèces</option>
+                <option value="autre">Autre</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" id="add-payment-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Enregistrer un paiement
+            </button>
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table class="data-table" id="payments-table">
+                <thead>
+                  <tr>
+                    <th>Référence</th>
+                    <th>Client</th>
+                    <th>Montant</th>
+                    <th>Méthode</th>
+                    <th>Service</th>
+                    <th>Période</th>
+                    <th>Date</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="payments-tbody"></tbody>
+              </table>
+            </div>
+            <div class="table-footer" id="payments-footer"></div>
+          </div>
+        </section>
+
+        <!-- ALERTS PAGE -->
+        <section id="page-alerts" class="page hidden">
+          <div class="alerts-container" id="alerts-container"></div>
+        </section>
+
+        <!-- HISTORY PAGE -->
+        <section id="page-history" class="page hidden">
+          <div class="page-actions-bar">
+            <div class="filters-row">
+              <select id="history-type-filter" class="select-input">
+                <option value="">Tous les types</option>
+                <option value="client_created">Création client</option>
+                <option value="client_updated">Modification client</option>
+                <option value="client_deleted">Suppression client</option>
+                <option value="payment">Paiement</option>
+                <option value="renewal">Renouvellement</option>
+                <option value="expiration">Expiration</option>
+              </select>
+            </div>
+            <button class="btn btn-secondary" id="clear-history-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              Vider l'historique
+            </button>
+          </div>
+          <div class="history-list" id="history-list"></div>
+        </section>
+
+        <!-- REPORTS PAGE -->
+        <section id="page-reports" class="page hidden">
+          <div class="reports-grid">
+            <div class="card">
+              <div class="card-header"><h2 class="card-title">CA & Bénéfice mensuel</h2></div>
+              <div class="card-body"><canvas id="chart-revenue" height="280"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h2 class="card-title">Nouveaux clients par mois</h2></div>
+              <div class="card-body"><canvas id="chart-clients" height="280"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h2 class="card-title">Services les plus vendus</h2></div>
+              <div class="card-body"><canvas id="chart-services" height="280"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h2 class="card-title">Répartition des méthodes de paiement</h2></div>
+              <div class="card-body"><canvas id="chart-payments" height="280"></canvas></div>
+            </div>
+          </div>
+          <div class="card mt-4">
+            <div class="card-header"><h2 class="card-title">Résumé annuel</h2></div>
+            <div class="card-body">
+              <div class="table-wrapper">
+                <table class="data-table" id="annual-report-table">
+                  <thead>
+                    <tr>
+                      <th>Mois</th>
+                      <th>CA</th>
+                      <th>Coûts</th>
+                      <th>Bénéfice</th>
+                      <th>Nouveaux clients</th>
+                      <th>Renouvellements</th>
+                      <th>Expirés</th>
+                    </tr>
+                  </thead>
+                  <tbody id="annual-report-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SETTINGS PAGE -->
+        <section id="page-settings" class="page hidden">
+          <div class="settings-grid">
+            <div class="card">
+              <div class="card-header"><h2 class="card-title">Services gérés</h2></div>
+              <div class="card-body">
+                <div class="services-list" id="services-list"></div>
+                <button class="btn btn-primary mt-3" id="add-service-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Ajouter un service
+                </button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h2 class="card-title">Sécurité</h2></div>
+              <div class="card-body">
+                <form id="change-password-form" class="settings-form" novalidate>
+                  <div class="form-group">
+                    <label>Nom d'utilisateur</label>
+                    <input type="text" id="new-username" placeholder="Nouveau nom d'utilisateur" />
+                  </div>
+                  <div class="form-group">
+                    <label>Mot de passe actuel</label>
+                    <input type="password" id="current-password" placeholder="Mot de passe actuel" />
+                  </div>
+                  <div class="form-group">
+                    <label>Nouveau mot de passe</label>
+                    <input type="password" id="new-password" placeholder="Nouveau mot de passe" />
+                  </div>
+                  <div class="form-group">
+                    <label>Confirmer le mot de passe</label>
+                    <input type="password" id="confirm-password" placeholder="Confirmer le mot de passe" />
+                  </div>
+                  <div id="password-msg" class="hidden"></div>
+                  <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                </form>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><h2 class="card-title">Export des données</h2></div>
+              <div class="card-body">
+                <p class="text-muted mb-3">Exportez toutes vos données au format JSON pour sauvegarde.</p>
+                <button class="btn btn-secondary" id="export-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Exporter JSON
+                </button>
+                <button class="btn btn-secondary ml-2" id="import-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Importer JSON
+                </button>
+                <input type="file" id="import-file" accept=".json" class="hidden" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- OVERLAY -->
+  <div class="overlay hidden" id="overlay"></div>
+
+  <!-- ===== MODALS ===== -->
+
+  <!-- Client Modal -->
+  <div class="modal hidden" id="client-modal" role="dialog" aria-modal="true" aria-labelledby="client-modal-title">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title" id="client-modal-title">Ajouter un client</h3>
+        <button class="modal-close" data-modal="client-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="client-form" novalidate>
+          <input type="hidden" id="client-id-field" />
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="cf-name">Nom complet <span class="required">*</span></label>
+              <input type="text" id="cf-name" placeholder="Ex : Jean Dupont" required />
+            </div>
+            <div class="form-group">
+              <label for="cf-whatsapp">Numéro WhatsApp <span class="required">*</span></label>
+              <input type="tel" id="cf-whatsapp" placeholder="Ex : +221700000000" required />
+            </div>
+            <div class="form-group">
+              <label for="cf-service">Service <span class="required">*</span></label>
+              <select id="cf-service" required></select>
+            </div>
+            <div class="form-group">
+              <label for="cf-subscription">Compte / Abonnement parent</label>
+              <select id="cf-subscription"></select>
+            </div>
+            <div class="form-group">
+              <label for="cf-profile">Nom du profil / Écran</label>
+              <input type="text" id="cf-profile" placeholder="Ex : Profil 1 (Jean)" />
+            </div>
+            <div class="form-group">
+              <label for="cf-pin">Code PIN du profil (optionnel)</label>
+              <input type="text" id="cf-pin" placeholder="Ex : 1234" maxlength="8" />
+            </div>
+            <div class="form-group">
+              <label for="cf-price">Prix payé (FCFA) <span class="required">*</span></label>
+              <input type="number" id="cf-price" placeholder="Ex : 1500" min="0" required />
+            </div>
+            <div class="form-group">
+              <label for="cf-start">Date de début <span class="required">*</span></label>
+              <input type="date" id="cf-start" required />
+            </div>
+            <div class="form-group">
+              <label for="cf-expiration">Date d'expiration <span class="required">*</span></label>
+              <input type="date" id="cf-expiration" required />
+            </div>
+            <div class="form-group">
+              <label for="cf-status">Statut</label>
+              <select id="cf-status">
+                <option value="active">Actif</option>
+                <option value="expired">Expiré</option>
+                <option value="suspended">Suspendu</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" id="cf-custom-creds-wrap" style="background:var(--bg-tertiary);padding:0.75rem 0.9rem;border-radius:var(--radius-sm);border:1px dashed var(--border-strong);margin-top:0.5rem">
+            <div style="font-size:0.8rem;color:var(--accent);font-weight:600;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.4rem">
+              <span>🔐 Identifiants personnalisés (si aucun compte parent sélectionné)</span>
+            </div>
+            <div class="form-grid" style="gap:0.6rem">
+              <div>
+                <label for="cf-custom-email">Email / Identifiant direct</label>
+                <input type="text" id="cf-custom-email" placeholder="Ex : client@domaine.com" />
+              </div>
+              <div>
+                <label for="cf-custom-password">Mot de passe direct</label>
+                <input type="text" id="cf-custom-password" placeholder="Ex : MotDePasse123" />
+              </div>
+            </div>
+          </div>
+          <div class="form-group mt-3">
+            <label for="cf-notes">Notes</label>
+            <textarea id="cf-notes" rows="2" placeholder="Notes supplémentaires..."></textarea>
+          </div>
+          <div class="form-error hidden" id="client-form-error"></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-modal="client-modal">Annuler</button>
+        <button class="btn btn-primary" id="client-save-btn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subscription Modal -->
+  <div class="modal hidden" id="sub-modal" role="dialog" aria-modal="true" aria-labelledby="sub-modal-title">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title" id="sub-modal-title">Ajouter un abonnement</h3>
+        <button class="modal-close" data-modal="sub-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="sub-form" novalidate>
+          <input type="hidden" id="sub-id-field" />
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="sf-service">Service <span class="required">*</span></label>
+              <select id="sf-service" required></select>
+            </div>
+            <div class="form-group">
+              <label for="sf-name">Nom / Référence du compte <span class="required">*</span></label>
+              <input type="text" id="sf-name" placeholder="Ex : Netflix Premium 4K - Compte #1" required />
+            </div>
+            <div class="form-group">
+              <label for="sf-email">Email / Identifiant de connexion <span class="required">*</span></label>
+              <input type="email" id="sf-email" placeholder="Ex : netflix.stream1@gmail.com" required />
+            </div>
+            <div class="form-group">
+              <label for="sf-password">Mot de passe du compte <span class="required">*</span></label>
+              <input type="text" id="sf-password" placeholder="Ex : MotDePasseSecret123" required />
+            </div>
+            <div class="form-group">
+              <label for="sf-pin">Code PIN Master (optionnel)</label>
+              <input type="text" id="sf-pin" placeholder="Ex : 1234" maxlength="8" />
+            </div>
+            <div class="form-group">
+              <label for="sf-slots">Nombre total d'écrans / profils <span class="required">*</span></label>
+              <input type="number" id="sf-slots" placeholder="Ex : 4" min="1" required />
+            </div>
+            <div class="form-group">
+              <label for="sf-cost">Coût d'achat (FCFA) <span class="required">*</span></label>
+              <input type="number" id="sf-cost" placeholder="Ex : 5000" min="0" required />
+            </div>
+            <div class="form-group">
+              <label for="sf-price">Prix de vente suggéré par profil (FCFA)</label>
+              <input type="number" id="sf-price" placeholder="Ex : 2500" min="0" />
+            </div>
+            <div class="form-group">
+              <label for="sf-buy-date">Date d'achat <span class="required">*</span></label>
+              <input type="date" id="sf-buy-date" required />
+            </div>
+            <div class="form-group">
+              <label for="sf-expiration">Date d'expiration <span class="required">*</span></label>
+              <input type="date" id="sf-expiration" required />
+            </div>
+          </div>
+          <div class="form-group mt-3">
+            <label for="sf-notes">Notes & Règles du compte</label>
+            <input type="text" id="sf-notes" placeholder="Ex : Facturé par carte virtuelle #1, renouvellement auto..." />
+          </div>
+          <div class="form-error hidden" id="sub-form-error"></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-modal="sub-modal">Annuler</button>
+        <button class="btn btn-primary" id="sub-save-btn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div class="modal hidden" id="payment-modal" role="dialog" aria-modal="true" aria-labelledby="payment-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="payment-modal-title">Enregistrer un paiement</h3>
+        <button class="modal-close" data-modal="payment-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="payment-form" novalidate>
+          <input type="hidden" id="payment-id-field" />
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="pf-client">Client <span class="required">*</span></label>
+              <select id="pf-client" required></select>
+            </div>
+            <div class="form-group">
+              <label for="pf-amount">Montant (FCFA) <span class="required">*</span></label>
+              <input type="number" id="pf-amount" placeholder="Ex : 1500" min="0" required />
+            </div>
+            <div class="form-group">
+              <label for="pf-method">Méthode de paiement <span class="required">*</span></label>
+              <select id="pf-method" required>
+                <option value="wave">Wave</option>
+                <option value="orange_money">Orange Money</option>
+                <option value="especes">Espèces</option>
+                <option value="autre">Autre</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="pf-service">Service</label>
+              <select id="pf-service"></select>
+            </div>
+            <div class="form-group">
+              <label for="pf-date">Date <span class="required">*</span></label>
+              <input type="date" id="pf-date" required />
+            </div>
+            <div class="form-group">
+              <label for="pf-period">Période couverte</label>
+              <input type="text" id="pf-period" placeholder="Ex : Octobre 2025" />
+            </div>
+            <div class="form-group">
+              <label for="pf-reference">Référence</label>
+              <input type="text" id="pf-reference" placeholder="Ex : PAY-20251001-001" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="pf-notes">Notes</label>
+            <textarea id="pf-notes" rows="2" placeholder="Notes..."></textarea>
+          </div>
+          <div class="form-error hidden" id="payment-form-error"></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-modal="payment-modal">Annuler</button>
+        <button class="btn btn-primary" id="payment-save-btn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Renewal Modal -->
+  <div class="modal hidden" id="renewal-modal" role="dialog" aria-modal="true" aria-labelledby="renewal-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="renewal-modal-title">Renouveler l'abonnement</h3>
+        <button class="modal-close" data-modal="renewal-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="renewal-client-info" class="renewal-info"></div>
+        <form id="renewal-form" novalidate>
+          <input type="hidden" id="renewal-client-id" />
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="rf-amount">Montant payé (FCFA) <span class="required">*</span></label>
+              <input type="number" id="rf-amount" min="0" required />
+            </div>
+            <div class="form-group">
+              <label for="rf-method">Méthode de paiement</label>
+              <select id="rf-method">
+                <option value="wave">Wave</option>
+                <option value="orange_money">Orange Money</option>
+                <option value="especes">Espèces</option>
+                <option value="autre">Autre</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="rf-new-expiration">Nouvelle date d'expiration <span class="required">*</span></label>
+              <input type="date" id="rf-new-expiration" required />
+            </div>
+            <div class="form-group">
+              <label for="rf-reference">Référence</label>
+              <input type="text" id="rf-reference" placeholder="Référence paiement" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="rf-notes">Notes</label>
+            <textarea id="rf-notes" rows="2"></textarea>
+          </div>
+          <div class="form-error hidden" id="renewal-form-error"></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-modal="renewal-modal">Annuler</button>
+        <button class="btn btn-primary" id="renewal-save-btn">Renouveler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Credentials & WhatsApp Access Modal -->
+  <div class="modal hidden" id="credentials-modal" role="dialog" aria-modal="true" aria-labelledby="creds-modal-title">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span style="font-size:1.3rem">🔑</span>
+          <div>
+            <h3 class="modal-title" id="creds-modal-title">Fiche Accès & Identifiants</h3>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin:0" id="creds-modal-subtitle">Détails de connexion et envoi WhatsApp</p>
+          </div>
+        </div>
+        <button class="modal-close" data-modal="credentials-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Client & Account Summary Banner -->
+        <div class="credentials-summary-banner" id="creds-summary-banner"></div>
+
+        <!-- Credentials Quick Copy Grid -->
+        <div class="credentials-box-grid">
+          <div class="credential-box">
+            <div class="cred-header">
+              <span class="cred-label">📧 Identifiant / Email</span>
+              <button class="btn-copy-small" id="creds-copy-email-btn" title="Copier l'email">Copier</button>
+            </div>
+            <div class="cred-value" id="creds-display-email">—</div>
+          </div>
+
+          <div class="credential-box">
+            <div class="cred-header">
+              <span class="cred-label">🔑 Mot de passe</span>
+              <div style="display:flex;gap:0.3rem">
+                <button class="btn-peek-small" id="creds-toggle-pw-btn" title="Afficher/Masquer">👁️</button>
+                <button class="btn-copy-small" id="creds-copy-pw-btn" title="Copier le mot de passe">Copier</button>
+              </div>
+            </div>
+            <div class="cred-value" id="creds-display-pw" data-hidden="true">••••••••</div>
+          </div>
+
+          <div class="credential-box">
+            <div class="cred-header">
+              <span class="cred-label">👤 Profil / Écran</span>
+              <button class="btn-copy-small" id="creds-copy-profile-btn" title="Copier le nom du profil">Copier</button>
+            </div>
+            <div class="cred-value" id="creds-display-profile">—</div>
+          </div>
+
+          <div class="credential-box">
+            <div class="cred-header">
+              <span class="cred-label">🔢 Code PIN Profil</span>
+              <button class="btn-copy-small" id="creds-copy-pin-btn" title="Copier le code PIN">Copier</button>
+            </div>
+            <div class="cred-value" id="creds-display-pin">—</div>
+          </div>
+        </div>
+
+        <!-- WhatsApp Message Formatter & Dispatch -->
+        <div class="wa-message-dispatch-card mt-3">
+          <div class="wa-dispatch-header">
+            <div style="display:flex;align-items:center;gap:0.4rem">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              <strong style="font-size:0.88rem;color:#e8eaf0">Message WhatsApp généré</strong>
+            </div>
+            <div class="wa-template-tabs">
+              <button class="wa-tab-btn active" id="tab-template-access">🍿 Accès / Bienvenue</button>
+              <button class="wa-tab-btn" id="tab-template-reminder">🔔 Rappel renouvellement</button>
+            </div>
+          </div>
+          <textarea id="creds-wa-message-text" rows="8" class="wa-textarea-preview" placeholder="Texte du message WhatsApp..."></textarea>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.35rem">
+            💡 Astuce : Vous pouvez modifier le message ci-dessus directement avant de l'envoyer ou de le copier.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-modal="credentials-modal">Fermer</button>
+        <button class="btn btn-secondary" id="creds-copy-msg-btn">
+          📋 Copier le message
+        </button>
+        <a href="#" target="_blank" class="btn btn-success" id="creds-open-wa-btn" style="background:#25d366;color:#fff;border-color:#25d366">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Envoyer sur WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subscription Profiles & Slots Modal -->
+  <div class="modal hidden" id="sub-profiles-modal" role="dialog" aria-modal="true" aria-labelledby="sub-profiles-modal-title">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span style="font-size:1.3rem">👥</span>
+          <div>
+            <h3 class="modal-title" id="sub-profiles-modal-title">Profils & Écrans du compte</h3>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin:0" id="sub-profiles-modal-subtitle">Gestion des accès et attribution des clients</p>
+          </div>
+        </div>
+        <button class="modal-close" data-modal="sub-profiles-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Account Overview Card -->
+        <div class="sub-account-details-card" id="sub-account-overview-card"></div>
+
+        <!-- Profiles / Slots Grid -->
+        <div class="sub-slots-section mt-3">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem">
+            <h4 style="font-size:0.95rem;font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:0.4rem">
+              <span>Écrans / Profils attribués</span>
+              <span class="badge" id="sub-slots-badge" style="background:var(--accent-soft);color:var(--accent)">0/0</span>
+            </h4>
+            <button class="btn btn-sm btn-primary" id="sub-assign-new-client-btn">
+              + Assigner un nouveau client
+            </button>
+          </div>
+          <div class="profiles-slots-grid" id="profiles-slots-grid"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-modal="sub-profiles-modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Service Modal -->
+  <div class="modal hidden" id="service-modal" role="dialog" aria-modal="true" aria-labelledby="service-modal-title">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title" id="service-modal-title">Ajouter un service</h3>
+        <button class="modal-close" data-modal="service-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="service-form" novalidate>
+          <input type="hidden" id="service-id-field" />
+          <div class="form-group">
+            <label for="svc-name">Nom du service <span class="required">*</span></label>
+            <input type="text" id="svc-name" placeholder="Ex : Netflix, Spotify..." required />
+          </div>
+          <div class="form-group">
+            <label for="svc-color">Couleur</label>
+            <input type="color" id="svc-color" value="#6366f1" />
+          </div>
+          <div class="form-group">
+            <label for="svc-default-price">Prix de vente par défaut (FCFA)</label>
+            <input type="number" id="svc-default-price" placeholder="Ex : 1500" min="0" />
+          </div>
+          <div class="form-error hidden" id="service-form-error"></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-modal="service-modal">Annuler</button>
+        <button class="btn btn-primary" id="service-save-btn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Dialog -->
+  <div class="modal hidden" id="confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title" id="confirm-title">Confirmer</h3>
+        <button class="modal-close" data-modal="confirm-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-message"></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-modal="confirm-modal">Annuler</button>
+        <button class="btn btn-danger" id="confirm-ok-btn">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="js/db.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/clients.js"></script>
+  <script src="js/subscriptions.js"></script>
+  <script src="js/payments.js"></script>
+  <script src="js/alerts.js"></script>
+  <script src="js/history.js"></script>
+  <script src="js/reports.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/netflix-codes.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
