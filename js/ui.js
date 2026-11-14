@@ -79,28 +79,58 @@ const UI = (() => {
     });
     // Update title
     const titles = {
-      dashboard:     'Tableau de bord',
-      clients:       'Gestion des clients',
-      subscriptions: 'Abonnements',
-      payments:      'Paiements',
-      alerts:        'Alertes',
-      history:       'Historique',
-      reports:       'Rapports',
-      settings:      'Paramètres',
+      dashboard:       'Tableau de bord',
+      clients:         'Gestion des clients',
+      subscriptions:   'Abonnements',
+      'netflix-codes': 'Codes Netflix & Foyers',
+      payments:        'Paiements',
+      alerts:          'Alertes',
+      history:         'Historique',
+      reports:         'Rapports',
+      settings:        'Paramètres',
     };
     Utils.el('page-title').textContent = titles[page] || page;
     // Close sidebar on mobile
-    document.getElementById('sidebar').classList.remove('open');
+    closeSidebar();
   }
 
   // ===================== SIDEBAR =====================
-  function initSidebar() {
-    const sidebar     = Utils.el('sidebar');
-    const menuBtn     = Utils.el('menu-btn');
-    const closeBtn    = Utils.el('sidebar-close-btn');
+  function openSidebar() {
+    const sidebar  = Utils.el('sidebar');
+    const backdrop = Utils.el('sidebar-backdrop');
+    if (sidebar) sidebar.classList.add('open');
+    if (backdrop) backdrop.classList.add('open');
+    if (window.innerWidth <= 768) {
+      document.body.style.overflow = 'hidden';
+    }
+  }
 
-    menuBtn.addEventListener('click', () => sidebar.classList.add('open'));
-    closeBtn.addEventListener('click', () => sidebar.classList.remove('open'));
+  function closeSidebar() {
+    const sidebar  = Utils.el('sidebar');
+    const backdrop = Utils.el('sidebar-backdrop');
+    if (sidebar) sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function initSidebar() {
+    const menuBtn  = Utils.el('menu-btn');
+    const closeBtn = Utils.el('sidebar-close-btn');
+    const backdrop = Utils.el('sidebar-backdrop');
+
+    if (menuBtn) menuBtn.addEventListener('click', openSidebar);
+    if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+    if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSidebar();
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
+        closeSidebar();
+      }
+    });
 
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', (e) => {
