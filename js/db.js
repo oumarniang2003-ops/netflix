@@ -290,20 +290,72 @@ const DB = (() => {
     const fmt = d => d.toISOString().split('T')[0];
     const addDays = (d, n) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
 
-    // Subscriptions created first so clients can be linked to parent accounts
+    // Comptes Netflix Réels & Partenaires
     if (subscriptions.getAll().length === 0) {
       subscriptions.add({
-        name: 'Netflix Premium 4K - Compte #1',
+        name: 'Netflix - compte 1',
         service: 'Netflix',
         accountEmail: 'stream.netflix1@gmail.com',
-        accountPassword: 'PassNetflix2025!',
-        accountPin: '1234',
+        accountPassword: 'PassNetflix2026!',
+        accountPin: '7530',
+        cost: 5000,
+        sellingPrice: 3000,
+        buyDate: '2026-10-30',
+        expirationDate: '2026-12-30',
+        slots: 4,
+        notes: 'Compte 1 (Dembele, Gendarmerie, Moussa)'
+      });
+      subscriptions.add({
+        name: 'Netflix - Compte 2',
+        service: 'Netflix',
+        accountEmail: 'stream.netflix2@gmail.com',
+        accountPassword: 'PassNetflix2026!',
+        accountPin: '0356',
         cost: 5000,
         sellingPrice: 2500,
-        buyDate: fmt(addDays(today,-15)),
-        expirationDate: fmt(addDays(today,15)),
+        buyDate: '2026-11-14',
+        expirationDate: '2026-12-14',
         slots: 4,
-        notes: 'Compte principal 4K UHD'
+        notes: 'Compte 2 (Abdoulaye)'
+      });
+      subscriptions.add({
+        name: 'Netflix - compte 3',
+        service: 'Netflix',
+        accountEmail: 'stream.netflix3@gmail.com',
+        accountPassword: 'PassNetflix2026!',
+        accountPin: '2394',
+        cost: 5000,
+        sellingPrice: 3000,
+        buyDate: '2026-11-02',
+        expirationDate: '2026-12-02',
+        slots: 4,
+        notes: 'Compte 3 (Alioune Diouck)'
+      });
+      subscriptions.add({
+        name: 'Netflix - compte 4',
+        service: 'Netflix',
+        accountEmail: 'stream.netflix4@gmail.com',
+        accountPassword: 'PassNetflix2026!',
+        accountPin: '0056',
+        cost: 5000,
+        sellingPrice: 2500,
+        buyDate: '2026-11-20',
+        expirationDate: '2026-12-20',
+        slots: 4,
+        notes: 'Compte 4 (khlif sall)'
+      });
+      subscriptions.add({
+        name: 'Netflix - Compte 5',
+        service: 'Netflix',
+        accountEmail: 'stream.netflix5@gmail.com',
+        accountPassword: 'PassNetflix2026!',
+        accountPin: '3398',
+        cost: 5000,
+        sellingPrice: 3000,
+        buyDate: '2026-10-24',
+        expirationDate: '2026-11-24',
+        slots: 4,
+        notes: 'Compte 5 (libase Niang)'
       });
       subscriptions.add({
         name: 'Spotify Famille - Compte #1',
@@ -318,108 +370,107 @@ const DB = (() => {
         slots: 2,
         notes: 'Abonnement familial'
       });
-      subscriptions.add({
-        name: 'Disney+ Standard - Compte #1',
-        service: 'Disney+',
-        accountEmail: 'disney.vip1@gmail.com',
-        accountPassword: 'DisneyMagic2025!',
-        accountPin: '0000',
-        cost: 3500,
-        sellingPrice: 2000,
-        buyDate: fmt(addDays(today,-28)),
-        expirationDate: fmt(addDays(today,2)),
-        slots: 4,
-        notes: 'Compte 4 écrans'
-      });
     }
 
     if (clients.getAll().length === 0) {
       const allSubs = subscriptions.getAll();
-      const subNetflix = allSubs.find(s => s.service === 'Netflix');
-      const subSpotify = allSubs.find(s => s.service === 'Spotify');
-      const subDisney  = allSubs.find(s => s.service === 'Disney+');
+      const sub1 = allSubs.find(s => s.name.includes('compte 1') || s.accountPin === '7530');
+      const sub2 = allSubs.find(s => s.name.includes('Compte 2') || s.accountPin === '0356');
+      const sub3 = allSubs.find(s => s.name.includes('compte 3') || s.accountPin === '2394');
+      const sub4 = allSubs.find(s => s.name.includes('compte 4') || s.accountPin === '0056');
+      const sub5 = allSubs.find(s => s.name.includes('Compte 5') || s.accountPin === '3398');
 
-      const c1 = clients.add({
+      clients.add({
+        name: 'libase Niang',
+        whatsapp: '+221775407574',
+        service: 'Netflix',
+        subscriptionId: sub5 ? sub5.id : '',
+        profile: 'Compte 5',
+        pinCode: '3398',
+        price: 3000,
+        startDate: '2026-10-24',
+        expirationDate: '2026-11-24',
+        status: 'active',
+        notes: 'Compte 5'
+      });
+      clients.add({
+        name: 'Dembele',
+        whatsapp: '+221781486583',
+        service: 'Netflix',
+        subscriptionId: sub1 ? sub1.id : '',
+        profile: 'compte 1',
+        pinCode: '7530',
+        price: 3000,
+        startDate: '2026-10-30',
+        expirationDate: '2026-11-30',
+        status: 'active',
+        notes: 'compte 1'
+      });
+      clients.add({
+        name: 'Alioune Diouck',
+        whatsapp: '+221774808043',
+        service: 'Netflix',
+        subscriptionId: sub3 ? sub3.id : '',
+        profile: 'compte 3',
+        pinCode: '2394',
+        price: 3000,
+        startDate: '2026-11-02',
+        expirationDate: '2026-12-02',
+        status: 'active',
+        notes: 'compte 3'
+      });
+      clients.add({
+        name: 'Abdoulaye',
+        whatsapp: '+221784226091',
+        service: 'Netflix',
+        subscriptionId: sub2 ? sub2.id : '',
+        profile: 'Compte 2',
+        pinCode: '0356',
+        price: 2500,
+        startDate: '2026-11-14',
+        expirationDate: '2026-12-14',
+        status: 'active',
+        notes: 'Compte 2'
+      });
+      clients.add({
+        name: 'Gendarmerie',
+        whatsapp: '+221789927754',
+        service: 'Netflix',
+        subscriptionId: sub1 ? sub1.id : '',
+        profile: 'compte 1',
+        pinCode: '7530',
+        price: 3000,
+        startDate: '2026-11-16',
+        expirationDate: '2026-12-16',
+        status: 'active',
+        notes: 'compte 1'
+      });
+      clients.add({
+        name: 'khlif sall',
+        whatsapp: '+221775920936',
+        service: 'Netflix',
+        subscriptionId: sub4 ? sub4.id : '',
+        profile: 'compte 4',
+        pinCode: '0056',
+        price: 2500,
+        startDate: '2026-11-20',
+        expirationDate: '2026-12-20',
+        status: 'active',
+        notes: 'compte 4'
+      });
+      clients.add({
         name: 'Moussa Diallo',
         whatsapp: '+221771234567',
         service: 'Netflix',
-        subscriptionId: subNetflix ? subNetflix.id : '',
-        profile: 'Profil 1 (Moussa)',
-        pinCode: '1122',
+        subscriptionId: sub1 ? sub1.id : '',
+        profile: 'compte 1',
+        pinCode: '7530',
         price: 2500,
-        startDate: fmt(addDays(today,-15)),
-        expirationDate: fmt(addDays(today,15)),
+        startDate: '2026-11-05',
+        expirationDate: '2026-12-05',
         status: 'active',
-        notes: ''
+        notes: 'compte 1'
       });
-      const c2 = clients.add({
-        name: 'Fatou Ndiaye',
-        whatsapp: '+221782345678',
-        service: 'Spotify',
-        subscriptionId: subSpotify ? subSpotify.id : '',
-        profile: 'Profil 1 (Fatou)',
-        pinCode: '',
-        price: 1500,
-        startDate: fmt(addDays(today,-60)),
-        expirationDate: fmt(addDays(today,-5)),
-        status: 'expired',
-        notes: ''
-      });
-      const c3 = clients.add({
-        name: 'Ibrahim Sow',
-        whatsapp: '+221793456789',
-        service: 'Disney+',
-        subscriptionId: subDisney ? subDisney.id : '',
-        profile: 'Profil 1 (Ibrahim)',
-        pinCode: '2468',
-        price: 2000,
-        startDate: fmt(addDays(today,-28)),
-        expirationDate: fmt(addDays(today,2)),
-        status: 'active',
-        notes: 'Client fidèle'
-      });
-      const c4 = clients.add({
-        name: 'Aminata Balde',
-        whatsapp: '+221760000001',
-        service: 'Netflix',
-        subscriptionId: subNetflix ? subNetflix.id : '',
-        profile: 'Profil 2 (Aminata)',
-        pinCode: '3344',
-        price: 2500,
-        startDate: fmt(addDays(today,-10)),
-        expirationDate: fmt(addDays(today,5)),
-        status: 'active',
-        notes: ''
-      });
-      const c5 = clients.add({
-        name: 'Ousmane Traoré',
-        whatsapp: '+221760000002',
-        service: 'YouTube Premium',
-        subscriptionId: '',
-        customEmail: 'ousmane.yt@gmail.com',
-        customPassword: 'YTUser2025!',
-        profile: 'Invitation Famille',
-        pinCode: '',
-        price: 1500,
-        startDate: fmt(addDays(today,-5)),
-        expirationDate: fmt(addDays(today,25)),
-        status: 'active',
-        notes: ''
-      });
-
-      // Payments
-      payments.add({ clientId: c1.id, clientName: c1.name, amount: 2500, method: 'wave',       service: 'Netflix', date: fmt(addDays(today,-15)), period: 'Mois en cours', notes: '' });
-      payments.add({ clientId: c2.id, clientName: c2.name, amount: 1500, method: 'orange_money', service: 'Spotify', date: fmt(addDays(today,-60)), period: 'Mois précédent', notes: '' });
-      payments.add({ clientId: c3.id, clientName: c3.name, amount: 2000, method: 'especes',     service: 'Disney+', date: fmt(addDays(today,-28)), period: 'Mois en cours', notes: '' });
-      payments.add({ clientId: c4.id, clientName: c4.name, amount: 2500, method: 'wave',        service: 'Netflix', date: fmt(addDays(today,-10)), period: 'Mois en cours', notes: '' });
-      payments.add({ clientId: c5.id, clientName: c5.name, amount: 1500, method: 'wave',        service: 'YouTube Premium', date: fmt(addDays(today,-5)), period: 'Mois en cours', notes: '' });
-
-      // Activity logs
-      activityLogs.add('client_created', `Client créé : ${c1.name}`, { clientId: c1.id });
-      activityLogs.add('client_created', `Client créé : ${c2.name}`, { clientId: c2.id });
-      activityLogs.add('payment', `Paiement de 2500 FCFA par ${c1.name}`, { clientId: c1.id });
-      activityLogs.add('payment', `Paiement de 1500 FCFA par ${c2.name}`, { clientId: c2.id });
-      activityLogs.add('expiration', `Abonnement expiré : ${c2.name}`, { clientId: c2.id });
     }
 
     if (netflixCodes.getAll().length === 0) {
@@ -428,7 +479,7 @@ const DB = (() => {
         code: '7492',
         email: sub ? sub.accountEmail : 'stream.netflix1@gmail.com',
         subscriptionId: sub ? sub.id : '',
-        clientName: 'Moussa Diallo & Aminata Balde',
+        clientName: 'Dembele & Moussa Diallo',
         source: 'Email automatique (info@account.netflix.com)',
         householdLink: 'https://www.netflix.com/update-primary-location'
       });
@@ -445,7 +496,7 @@ const DB = (() => {
       let modified = false;
       if (!s.name) { s.name = `${s.service} Compte Principal`; modified = true; }
       if (!s.accountEmail) {
-        if (s.service === 'Netflix') { s.accountEmail = 'stream.netflix1@gmail.com'; s.accountPassword = 'PassNetflix2025!'; s.accountPin = '1234'; }
+        if (s.service === 'Netflix') { s.accountEmail = 'stream.netflix1@gmail.com'; s.accountPassword = 'PassNetflix2026!'; s.accountPin = '7530'; }
         else if (s.service === 'Spotify') { s.accountEmail = 'spotify.fam1@gmail.com'; s.accountPassword = 'MusicSpotify2025*'; }
         else { s.accountEmail = `${s.service.toLowerCase().replace(/\s+/g,'')}@account.com`; s.accountPassword = 'PassAccount2025!'; }
         modified = true;
@@ -454,8 +505,36 @@ const DB = (() => {
     });
     if (subUpdated) _set(KEYS.subscriptions, allSubs);
 
-    const allClients = clients.getAll();
+    let allClients = clients.getAll();
+
+    // UPGRADE AUTOMATIQUE : Si l'utilisateur ou le smartphone a encore les anciens clients de démo (Fatou Ndiaye, Ibrahim Sow)
+    // et n'a pas encore les vrais clients de baroube (Dembele, libase Niang), on remplace par les vrais clients !
+    const hasDembele = allClients.some(c => c.name && c.name.toLowerCase().includes('dembele'));
+    const hasOnlyOldMock = allClients.some(c => c.name === 'Fatou Ndiaye' || c.name === 'Ibrahim Sow');
+
+    if (!hasDembele && (hasOnlyOldMock || allClients.length <= 5)) {
+      const realSubs = subscriptions.getAll();
+      const s1 = realSubs.find(s => s.name && s.name.includes('compte 1')) || realSubs[0];
+      const s2 = realSubs.find(s => s.name && s.name.includes('Compte 2')) || realSubs[0];
+      const s3 = realSubs.find(s => s.name && s.name.includes('compte 3')) || realSubs[0];
+      const s4 = realSubs.find(s => s.name && s.name.includes('compte 4')) || realSubs[0];
+      const s5 = realSubs.find(s => s.name && s.name.includes('Compte 5')) || realSubs[0];
+
+      allClients = [
+        { id: 'CLI-0001-LIB', name: 'libase Niang', whatsapp: '+221775407574', service: 'Netflix', subscriptionId: s5?.id || '', profile: 'Compte 5', pinCode: '3398', price: 3000, startDate: '2026-10-24', expirationDate: '2026-11-24', status: 'active', notes: 'Compte 5' },
+        { id: 'CLI-0002-DEM', name: 'Dembele', whatsapp: '+221781486583', service: 'Netflix', subscriptionId: s1?.id || '', profile: 'compte 1', pinCode: '7530', price: 3000, startDate: '2026-10-30', expirationDate: '2026-11-30', status: 'active', notes: 'compte 1' },
+        { id: 'CLI-0003-ALI', name: 'Alioune Diouck', whatsapp: '+221774808043', service: 'Netflix', subscriptionId: s3?.id || '', profile: 'compte 3', pinCode: '2394', price: 3000, startDate: '2026-11-02', expirationDate: '2026-12-02', status: 'active', notes: 'compte 3' },
+        { id: 'CLI-0004-ABD', name: 'Abdoulaye', whatsapp: '+221784226091', service: 'Netflix', subscriptionId: s2?.id || '', profile: 'Compte 2', pinCode: '0356', price: 2500, startDate: '2026-11-14', expirationDate: '2026-12-14', status: 'active', notes: 'Compte 2' },
+        { id: 'CLI-0005-GEN', name: 'Gendarmerie', whatsapp: '+221789927754', service: 'Netflix', subscriptionId: s1?.id || '', profile: 'compte 1', pinCode: '7530', price: 3000, startDate: '2026-11-16', expirationDate: '2026-12-16', status: 'active', notes: 'compte 1' },
+        { id: 'CLI-0006-KHL', name: 'khlif sall', whatsapp: '+221775920936', service: 'Netflix', subscriptionId: s4?.id || '', profile: 'compte 4', pinCode: '0056', price: 2500, startDate: '2026-11-20', expirationDate: '2026-12-20', status: 'active', notes: 'compte 4' },
+        { id: 'CLI-0007-MOU', name: 'Moussa Diallo', whatsapp: '+221771234567', service: 'Netflix', subscriptionId: s1?.id || '', profile: 'compte 1', pinCode: '7530', price: 2500, startDate: '2026-11-05', expirationDate: '2026-12-05', status: 'active', notes: 'compte 1' }
+      ];
+      _set(KEYS.clients, allClients);
+    }
+
+    // Vérifier les associations clients <-> comptes
     let cliUpdated = false;
+    allClients = clients.getAll();
     allClients.forEach(c => {
       if (!c.subscriptionId) {
         const matchingSub = allSubs.find(s => s.service === c.service);

@@ -47,6 +47,13 @@ const CloudSync = (() => {
       const data = decodeSyncData(rawData);
       if (data && (data.clients || data.subscriptions)) {
         DB.importAll(data);
+
+        // Si une configuration Cloud / Firebase était incluse dans le lien, on l'active automatiquement !
+        if (data.cloudConfig && data.cloudConfig.firebaseUrl) {
+          saveConfig(data.cloudConfig);
+          startCloudListener();
+          updateCloudStatusBadge(true);
+        }
         
         // Nettoyer l'URL sans recharger la page
         if (window.history && window.history.replaceState) {
@@ -56,7 +63,7 @@ const CloudSync = (() => {
 
         const count = (data.clients || []).length;
         setTimeout(() => {
-          UI.toast(`✅ Synchronisation réussie ! ${count} client(s) importés sur votre téléphone.`, 'success', 5000);
+          UI.toast(`✅ Synchronisation réussie ! ${count} client(s) et comptes synchronisés sur votre téléphone.`, 'success', 6000);
           if (typeof App !== 'undefined' && App.renderPage) {
             App.renderPage('clients');
           }
@@ -72,7 +79,10 @@ const CloudSync = (() => {
 
   // --- Générer le lien magique de synchronisation ---
   function getMagicSyncUrl() {
-    const exportData = DB.exportAll();
+    const exportData = {
+      ...DB.exportAll(),
+      cloudConfig: getConfig()
+    };
     const encoded = encodeSyncData(exportData);
     const origin = window.location.origin;
     const path = window.location.pathname;
@@ -181,26 +191,51 @@ const CloudSync = (() => {
     // Pull initial
     pullFromCloud(true);
 
-    // Écoute / Polling discret toutes les 12 secondes
+    // Écoute / Polling discret toutes les 8 secondes pour synchronisation en direct
     if (_listenerInterval) clearInterval(_listenerInterval);
     _listenerInterval = setInterval(() => {
       pullFromCloud(true);
-    }, 12000);
+    }, 8000);
   }
 
   function updateCloudStatusBadge(isConnected = false) {
     const cfg = getConfig();
-    const badge = Utils.el('cloud-status-indicator');
-    if (!badge) return;
+    const hasCloud = Boolean(cfg.firebaseUrl);
 
-    if (cfg.firebaseUrl) {
-      badge.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> Cloud Actif`;
-      badge.style.color = '#10b981';
-      badge.title = 'Synchronisation Cloud automatique active';
-    } else {
-      badge.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#8892a4;margin-right:4px;"></span> Local`;
-      badge.style.color = 'var(--text-muted)';
-      badge.title = 'Mode mémoire locale (cliquez pour synchroniser avec votre téléphone)';
+    // Mettre à jour l'indicateur interne de la modale
+    const badge = Utils.el('cloud-status-indicator');
+    if (badge) {
+      if (hasCloud) {
+        badge.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> Cloud Actif (Temps Réel)`;
+        badge.style.color = '#10b981';
+      } else {
+        badge.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#8892a4;margin-right:4px;"></span> Local`;
+        badge.style.color = 'var(--text-muted)';
+      }
+    }
+
+    // Mettre à jour le bouton de la barre supérieure (Header)
+    const navBtn = Utils.el('open-sync-btn');
+    if (navBtn) {
+      if (hasCloud) {
+        navBtn.innerHTML = `
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;"></span>
+          <span class="sync-btn-text">🟢 Cloud Actif</span>
+        `;
+        navBtn.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+        navBtn.style.background = 'rgba(16, 185, 129, 0.12)';
+        navBtn.style.color = '#10b981';
+        navBtn.title = 'Synchronisation Cloud automatique active (PC & Mobile en temps réel)';
+      } else {
+        navBtn.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          <span class="sync-btn-text">📲 Synchroniser Mobile</span>
+        `;
+        navBtn.style.borderColor = 'rgba(99,102,241,0.4)';
+        navBtn.style.background = 'rgba(99,102,241,0.12)';
+        navBtn.style.color = '#a5b4fc';
+        navBtn.title = 'Partager et synchroniser avec mon téléphone';
+      }
     }
   }
 
