@@ -81,15 +81,41 @@ const Dashboard = (() => {
     const totalCosts   = subs.reduce((s, sub) => s + (Number(sub.cost) || 0), 0);
     const netProfit    = totalRevenue - totalCosts;
 
+    const needsAction = expiring + expired;
+
     const stats = [
-      { label: 'Chiffre d\'affaires', value: Utils.formatCurrency(totalRevenue), icon: '💰', color: 'var(--success)',  bg: 'var(--success-soft)', sub: 'Total des paiements reçus' },
-      { label: 'Dépenses totales',    value: Utils.formatCurrency(totalCosts),   icon: '💸', color: 'var(--danger)',   bg: 'var(--danger-soft)',  sub: 'Coût des abonnements' },
-      { label: 'Bénéfice net',        value: Utils.formatCurrency(netProfit),    icon: '📈', color: netProfit >= 0 ? 'var(--success)' : 'var(--danger)', bg: netProfit >= 0 ? 'var(--success-soft)' : 'var(--danger-soft)', sub: 'CA – Dépenses' },
-      { label: 'Clients actifs',      value: active,   icon: '✅', color: 'var(--accent)',  bg: 'var(--accent-soft)',  sub: 'Abonnements en cours' },
-      { label: 'Clients expirés',     value: expired,  icon: '⛔', color: 'var(--danger)',  bg: 'var(--danger-soft)',  sub: 'À relancer' },
-      { label: 'Expirent bientôt',    value: expiring, icon: '⚠️', color: 'var(--warning)', bg: 'var(--warning-soft)', sub: 'Dans les 7 prochains jours' },
-      { label: 'Abonnements gérés',   value: subs.length, icon: '📋', color: 'var(--info)',  bg: 'var(--info-soft)', sub: 'Comptes & accès' },
-      { label: 'Total clients',       value: updated.length, icon: '👥', color: 'var(--accent)', bg: 'var(--accent-soft)', sub: 'Tous statuts confondus' },
+      {
+        label: 'Bénéfice net',
+        value: Utils.formatCurrency(netProfit),
+        icon: '💰',
+        color: netProfit >= 0 ? 'var(--success)' : 'var(--danger)',
+        bg: netProfit >= 0 ? 'var(--success-soft)' : 'var(--danger-soft)',
+        sub: `CA : ${Utils.formatCurrency(totalRevenue)} (dépenses : ${Utils.formatCurrency(totalCosts)})`
+      },
+      {
+        label: 'Clients actifs',
+        value: active,
+        icon: '👥',
+        color: 'var(--accent)',
+        bg: 'var(--accent-soft)',
+        sub: `${updated.length} client(s) enregistrés au total`
+      },
+      {
+        label: 'Alertes & Relances',
+        value: needsAction,
+        icon: '⚠️',
+        color: needsAction > 0 ? 'var(--warning)' : 'var(--success)',
+        bg: needsAction > 0 ? 'var(--warning-soft)' : 'var(--success-soft)',
+        sub: `${expiring} expirent bientôt • ${expired} expiré(s)`
+      },
+      {
+        label: 'Comptes & Stocks',
+        value: subs.length,
+        icon: '📦',
+        color: 'var(--info)',
+        bg: 'var(--info-soft)',
+        sub: `Abonnements & profils gérés`
+      },
     ];
 
     const grid = Utils.el('stats-grid');

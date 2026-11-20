@@ -402,6 +402,27 @@ label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--text-
   text-align: center;
 }
 .nav-badge[data-count="0"] { display: none; }
+
+/* Sidebar more tools collapsible */
+.sidebar-more-tools {
+  border-top: 1px solid var(--border);
+  padding-top: 0.4rem;
+}
+.sidebar-more-tools summary::-webkit-details-marker {
+  display: none;
+}
+.sidebar-more-tools[open] summary span:last-child {
+  transform: rotate(180deg);
+}
+.sidebar-more-tools summary span:last-child {
+  transition: transform var(--transition);
+}
+
+/* Bottom Navigation Bar (Hidden on desktop) */
+.bottom-nav {
+  display: none;
+}
+
 .sidebar-footer {
   border-top: 1px solid var(--border);
   padding: 0.85rem 1rem;
@@ -1379,6 +1400,45 @@ label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--text-
   }
   .page-container {
     padding: 1rem 0.85rem;
+    padding-bottom: 75px !important;
+  }
+
+  /* Bottom Navigation Bar (Mobile 1-Tap) */
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 58px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-strong);
+    z-index: 90;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 0.25rem;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+  }
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-decoration: none;
+    flex: 1;
+    height: 100%;
+    transition: color var(--transition);
+  }
+  .bottom-nav-item.active {
+    color: var(--accent);
+  }
+  .bottom-nav-item svg {
+    width: 20px;
+    height: 20px;
   }
 
   /* Action Bars, Filters & Inputs */

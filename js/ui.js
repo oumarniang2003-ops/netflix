@@ -68,8 +68,11 @@ const UI = (() => {
 
   // ===================== NAVIGATION =====================
   function navigate(page) {
-    // Update nav items
+    // Update nav items in sidebar and bottom nav
     document.querySelectorAll('.nav-item').forEach(item => {
+      item.classList.toggle('active', item.dataset.page === page);
+    });
+    document.querySelectorAll('.bottom-nav-item').forEach(item => {
       item.classList.toggle('active', item.dataset.page === page);
     });
     // Show/hide pages
@@ -132,7 +135,7 @@ const UI = (() => {
       }
     });
 
-    document.querySelectorAll('.nav-item').forEach(item => {
+    document.querySelectorAll('.nav-item, .bottom-nav-item').forEach(item => {
       item.addEventListener('click', (e) => {
         e.preventDefault();
         navigate(item.dataset.page);
