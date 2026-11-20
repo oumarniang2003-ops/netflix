@@ -309,6 +309,7 @@ const Clients = (() => {
     render();
     Dashboard.refresh();
     Alerts.refresh();
+    if (typeof CloudSync !== 'undefined') CloudSync.pushToCloud();
   }
 
   // ===================== DELETE =====================
@@ -322,6 +323,7 @@ const Clients = (() => {
       render();
       Dashboard.refresh();
       Alerts.refresh();
+      if (typeof CloudSync !== 'undefined') CloudSync.pushToCloud();
     });
   }
 
@@ -486,6 +488,7 @@ const Clients = (() => {
     render();
     Dashboard.refresh();
     Alerts.refresh();
+    if (typeof CloudSync !== 'undefined') CloudSync.pushToCloud();
   }
 
   // ===================== ACTION MENU =====================

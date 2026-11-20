@@ -480,6 +480,7 @@ const DB = (() => {
       payments:      payments.getAll(),
       services:      services.getAll(),
       activityLogs:  activityLogs.getAll(),
+      netflixCodes:  netflixCodes ? netflixCodes.getAll() : [],
       exportedAt:    new Date().toISOString(),
       version:       '1.0',
     };
@@ -491,6 +492,7 @@ const DB = (() => {
     if (data.payments)      _set(KEYS.payments, data.payments);
     if (data.services)      _set(KEYS.services, data.services);
     if (data.activityLogs)  _set(KEYS.activity_logs, data.activityLogs);
+    if (data.netflixCodes)  _set(KEYS.netflix_codes, data.netflixCodes);
   }
 
   // Initialize

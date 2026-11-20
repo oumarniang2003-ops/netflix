@@ -149,6 +149,10 @@
         </button>
         <div class="topbar-title" id="page-title">Tableau de bord</div>
         <div class="topbar-actions">
+          <button class="btn btn-sm btn-secondary sync-nav-btn" id="open-sync-btn" title="Partager et synchroniser avec mon téléphone" style="font-size: 0.78rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem; border-color: rgba(99,102,241,0.4); background: rgba(99,102,241,0.12); color: #a5b4fc;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            <span class="sync-btn-text">📲 Synchroniser Mobile</span>
+          </button>
           <div class="search-bar" id="global-search-bar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="global-search" placeholder="Rechercher..." />
@@ -1036,6 +1040,92 @@
     </div>
   </div>
 
+  <!-- Sync Modal -->
+  <div class="modal hidden" id="sync-modal" role="dialog" aria-modal="true" aria-labelledby="sync-modal-title">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span style="font-size:1.3rem">📲</span>
+          <div>
+            <h3 class="modal-title" id="sync-modal-title">Synchronisation Téléphone &amp; Cloud</h3>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin:0">Partagez instantanément vos clients entre votre PC et votre smartphone</p>
+          </div>
+        </div>
+        <button class="modal-close" data-modal="sync-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Onglets -->
+        <div style="display:flex;gap:0.5rem;margin-bottom:1.25rem;border-bottom:1px solid var(--border);padding-bottom:0.6rem;">
+          <button class="btn btn-sm btn-primary" id="sync-tab-instant-btn" style="font-size:0.82rem">⚡ Transfert Immédiat (1-Clic)</button>
+          <button class="btn btn-sm btn-ghost" id="sync-tab-cloud-btn" style="font-size:0.82rem">☁️ Cloud Automatique (Firebase)</button>
+        </div>
+
+        <!-- Section 1 : Transfert Immédiat vers le téléphone -->
+        <div id="sync-section-instant">
+          <div style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(16,185,129,0.08));border:1px solid var(--border-strong);border-radius:var(--radius);padding:1.1rem;margin-bottom:1.25rem;">
+            <div style="font-weight:700;font-size:0.95rem;margin-bottom:0.35rem;color:#fff">
+              📲 Affichez tous vos clients sur votre téléphone en 5 secondes
+            </div>
+            <div style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:0.85rem;" id="sync-summary-info">
+              Chargement des données...
+            </div>
+            <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+              <a href="#" target="_blank" class="btn btn-success" id="sync-wa-send-btn" style="background:#25d366;border:none;font-weight:700;font-size:0.85rem">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                📲 M'envoyer le lien sur WhatsApp (1-Clic)
+              </a>
+              <button class="btn btn-secondary" id="sync-copy-link-btn" style="font-size:0.85rem">
+                📋 Copier le lien magique
+              </button>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;background:var(--bg-tertiary);padding:1rem;border-radius:var(--radius);border:1px solid var(--border);">
+            <div style="text-align:center;">
+              <img id="sync-qr-code-img" alt="QR Code de synchronisation" style="width:160px;height:160px;border-radius:10px;background:#fff;padding:6px;display:block;margin:0 auto;" />
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem">Scannez avec votre téléphone</div>
+            </div>
+            <div style="flex:1;min-width:200px">
+              <h4 style="font-size:0.9rem;margin-bottom:0.4rem;color:#fff">Comment ça marche ?</h4>
+              <ol style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;padding-left:1.1rem;margin:0">
+                <li>Cliquez sur <strong>"M'envoyer sur WhatsApp"</strong> ou scannez le QR code.</li>
+                <li>Ouvrez le lien sur votre téléphone : <strong>vos clients s'affichent automatiquement</strong> !</li>
+                <li>Toutes les données sont instantanément enregistrées sur votre smartphone.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2 : Synchronisation Cloud Permanente (Firebase) -->
+        <div id="sync-section-cloud" style="display:none">
+          <div style="background:var(--bg-tertiary);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;">
+            <div style="font-weight:700;font-size:0.9rem;margin-bottom:0.35rem;color:#fff">
+              ☁️ Synchronisation automatique en temps réel (PC &harr; Téléphone)
+            </div>
+            <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:0.75rem;line-height:1.5">
+              Connectez votre base de données Google Firebase gratuite. Chaque client ou code ajouté sur votre PC apparaîtra <strong>automatiquement</strong> sur votre téléphone en direct sans jamais devoir renvoyer de lien.
+            </p>
+            <div class="form-group" style="margin-bottom:0.75rem">
+              <label for="sync-firebase-url" style="font-size:0.8rem">URL Firebase Realtime Database :</label>
+              <input type="url" id="sync-firebase-url" placeholder="Ex : https://mon-submanager-default-rtdb.firebaseio.com" style="font-size:0.85rem;" />
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+              <button class="btn btn-primary" id="sync-save-firebase-btn" style="font-size:0.82rem">
+                💾 Sauvegarder &amp; Activer
+              </button>
+              <button class="btn btn-ghost" onclick="window.open('https://console.firebase.google.com', '_blank')" style="font-size:0.82rem">
+                🔗 Créer ma base Firebase gratuite
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-modal="sync-modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notifications -->
   <div class="toast-container" id="toast-container"></div>
 
@@ -1052,6 +1142,7 @@
   <script src="js/dashboard.js"></script>
   <script src="js/settings.js"></script>
   <script src="js/netflix-codes.js"></script>
+  <script src="js/cloud-sync.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

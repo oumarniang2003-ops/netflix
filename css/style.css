@@ -1552,6 +1552,8 @@ label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--text-
 @media (max-width: 560px) {
   .topbar-date { display: none; }
   .search-bar { display: none; }
+  .sync-nav-btn { padding: 0.35rem 0.55rem; }
+  .sync-btn-text { display: none; }
 }
 
 /* --- SMALL PHONES (<= 480px) --- */

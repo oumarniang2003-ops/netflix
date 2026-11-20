@@ -23,6 +23,7 @@ const App = (() => {
     Settings.init();
     NetflixCodes.init();
     Dashboard.init();
+    if (typeof CloudSync !== 'undefined') CloudSync.init();
 
     // Render initial page
     renderPage('dashboard');
